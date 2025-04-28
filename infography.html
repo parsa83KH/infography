@@ -1,0 +1,1194 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>تحلیل خون‌شناسی</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.1/chart.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/gsap.min.js"></script>
+<!-- Add Persian Fonts -->
+<link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet" type="text/css" />
+<link href="https://cdn.jsdelivr.net/gh/rastikerdar/samim-font@v4.0.5/dist/font-face.css" rel="stylesheet" type="text/css" />
+<style>
+:root {
+    --bg-primary: #121212;
+    --bg-secondary: #1e1e1e;
+    --accent-primary: #ff4757;
+    --accent-secondary: #3498db;
+    --text-primary: #f5f5f5;
+    --text-secondary: #b3b3b3;
+    --card-bg: #242424;
+    --card-hover: #2d2d2d;
+    --highlight: #2980b9;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Vazirmatn', 'Samim', sans-serif;
+}
+
+body {
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    overflow-x: hidden;
+    position: relative;
+}
+
+#canvas-bg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    pointer-events: none;
+}
+
+.container {
+    width: 100%;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+header {
+    background: rgba(30, 30, 30, 0.7);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    padding: 20px 0;
+    position: relative;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+}
+
+.logo h1 {
+    margin-right: 15px;
+    font-weight: 700;
+    background: linear-gradient(45deg, var(--accent-primary), var(--accent-secondary));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-size: 2.2rem;
+    font-family: 'Samim', sans-serif;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+    transition: transform 0.3s ease, text-shadow 0.3s ease;
+}
+
+.logo h1:hover {
+    transform: scale(1.05);
+    text-shadow: 0 0 15px rgba(255, 71, 87, 0.5);
+}
+
+nav ul {
+    display: flex;
+    list-style: none;
+}
+
+nav ul li {
+    margin-right: 30px;
+}
+
+nav ul li a {
+    color: var(--text-primary);
+    text-decoration: none;
+    font-weight: 500;
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+nav ul li a:after {
+    content: '';
+    position: absolute;
+    bottom: -5px;
+    right: 0;
+    width: 0;
+    height: 2px;
+    background: var(--accent-primary);
+    transition: all 0.3s ease;
+}
+
+nav ul li a:hover {
+    color: var(--accent-primary);
+}
+
+nav ul li a:hover:after {
+    width: 100%;
+}
+
+.hero {
+    text-align: center;
+    padding: 40px 0;
+    background: transparent;
+    position: relative;
+}
+
+.hero h2 {
+    font-size: 2.8rem;
+    margin-bottom: 15px;
+    background: linear-gradient(45deg, var(--accent-primary), var(--accent-secondary));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+    font-family: 'Samim', sans-serif;
+    letter-spacing: 1px;
+    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.hero h2:hover {
+    transform: translateY(-5px) scale(1.02);
+}
+
+.hero p {
+    font-size: 1.2rem;
+    color: var(--text-secondary);
+    max-width: 800px;
+    margin: 0 auto;
+    position: relative;
+    line-height: 1.8;
+    padding: 0 20px;
+}
+
+.data-row {
+    display: flex;
+    flex-direction: column;
+    margin: 60px 0;
+    padding: 40px;
+    border-radius: 15px;
+    position: relative;
+    overflow: hidden;
+    background: transparent;
+    box-shadow: none;
+}
+
+.data-row::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));
+}
+
+.data-row h2 {
+    font-size: 2rem;
+    margin-bottom: 30px;
+    color: var(--text-primary);
+    font-family: 'Samim', sans-serif;
+    position: relative;
+    padding-right: 20px;
+    transition: all 0.3s ease;
+}
+
+.data-row h2:hover {
+    transform: translateX(-10px);
+    color: var(--accent-primary);
+}
+
+.data-row h2:hover::before {
+    height: 40px;
+    background: linear-gradient(to bottom, var(--accent-primary), var(--accent-secondary));
+}
+
+.sections {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 30px;
+    margin: 30px 0;
+    position: relative;
+}
+
+.card {
+    background: rgba(36, 36, 36, 0.7);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-radius: 12px;
+    padding: 25px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    transform: translateY(50px);
+    opacity: 0;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+    border-color: var(--accent-primary);
+}
+
+.card-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.3s ease;
+}
+
+.card-header h3 {
+    font-size: 1.4rem;
+    font-weight: 600;
+    font-family: 'Samim', sans-serif;
+    color: var(--accent-primary);
+}
+
+.card-header h3:hover {
+    transform: translateX(-5px);
+    background: linear-gradient(45deg, var(--accent-primary), var(--accent-secondary));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.card p {
+    color: var(--text-secondary);
+    line-height: 2;
+    margin-bottom: 20px;
+}
+
+.card ul {
+    padding-right: 20px;
+    margin-bottom: 20px;
+}
+
+.card ul li {
+    margin-bottom: 10px;
+    color: var(--text-secondary);
+    line-height: 1.8;
+}
+
+.chart-container {
+    width: 100%;
+    height: 400px;
+    margin: 30px 0;
+    padding: 20px;
+    position: relative;
+    border-radius: 12px;
+    overflow: hidden;
+    background: rgba(36, 36, 36, 0.7);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    opacity: 0;
+    transform: translateY(30px);
+}
+
+.chart-container:hover {
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+    border-color: var(--accent-secondary);
+}
+
+.canvas-holder {
+    width: 100%;
+    height: 100%;
+}
+
+.card-highlight {
+    border-right: 4px solid var(--accent-primary);
+    padding-right: 15px;
+    margin: 20px 0;
+}
+
+.card-highlight h4 {
+    font-size: 1.1rem;
+    color: var(--accent-primary);
+    margin-bottom: 5px;
+    font-family: 'Samim', sans-serif;
+}
+
+.card-highlight p {
+    font-size: 0.9rem;
+    line-height: 1.8;
+}
+
+.reference {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    margin-top: 10px;
+    font-style: italic;
+}
+
+.reference a {
+    color: var(--accent-secondary);
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.reference a:hover {
+    color: var(--accent-primary);
+    text-decoration: underline;
+}
+
+#rbc-canvas {
+    width: 100%;
+    height: 300px;
+    margin-top: 20px;
+}
+
+.show-more {
+    background: transparent;
+    border: 2px solid var(--accent-primary);
+    color: var(--accent-primary);
+    padding: 8px 15px;
+    border-radius: 4px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 10px;
+}
+
+.show-more:hover {
+    background: var(--accent-primary);
+    color: var(--bg-primary);
+}
+
+.hidden-content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.5s ease;
+}
+
+footer {
+    background: rgba(30, 30, 30, 0.7);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    padding: 20px 0;
+    margin-top: 40px;
+    text-align: center;
+}
+
+footer p {
+    color: var(--text-secondary);
+    line-height: 1.8;
+    font-size: 0.85rem;
+}
+
+.contact-info {
+    margin-top: 20px;
+    padding: 15px 25px;
+    border-radius: 10px;
+    display: inline-block;
+    border-right: 4px solid var(--accent-primary);
+    background: transparent;
+    box-shadow: none;
+}
+
+.contact-info p {
+    margin: 8px 0;
+    font-family: 'Samim', sans-serif;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    transition: color 0.3s ease;
+}
+
+.contact-info p:hover {
+    color: var(--text-primary);
+}
+
+.contact-info p:last-child {
+    color: var(--accent-secondary);
+}
+
+/* Animation Classes */
+.fade-in {
+    animation: fadeIn 1s forwards;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+.pulse {
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.6;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+/* 3D Cell Viewer */
+#cell-viewer {
+    width: 100%;
+    height: 300px;
+    border-radius: 10px;
+    overflow: hidden;
+    background-color: var(--card-bg);
+    margin: 20px 0;
+    position: relative;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .sections {
+        grid-template-columns: 1fr;
+    }
+
+    .header-content {
+        flex-direction: column;
+    }
+
+    nav ul {
+        margin-top: 20px;
+    }
+
+    nav ul li {
+        margin-right: 15px;
+        margin-left: 15px;
+    }
+
+    .hero h2 {
+        font-size: 2.2rem;
+    }
+
+    .chart-container {
+        height: 300px;
+    }
+}
+</style>
+</head>
+<body>
+<div id="canvas-bg"></div>
+<header>
+    <div class="container">
+        <div class="header-content">
+            <div class="logo">
+                <h1>تحلیل خون‌شناسی</h1>
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="#rbc-section">گلبول قرمز در مغز استخوان</a></li>
+                    <li><a href="#ldh-section">LDH</a></li>
+                    <li><a href="#hemolysis-section">همولیز</a></li>
+                    <li><a href="#rdw-section">RDW</a></li>
+                    <li><a href="#rna-section">RNA</a></li>
+                    <li><a href="#sleep-section">اثر خواب</a></li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+</header>
+
+<section class="hero">
+    <div class="container">
+        <h2>تحقیق های هماتولوژی</h2>
+        <p>نمایش تعاملی داده‌های خون‌شناسی</p>
+    </div>
+</section>
+
+<div class="container">
+    <section id="rbc-section" class="data-row">
+        <h2>تحلیل گلبول‌های قرمز (RBC)</h2>
+        <div class="sections">
+            <div class="card">
+                <div class="card-header">
+                    <h3>مشاهدات مغز استخوان</h3>
+                </div>
+                <p>گلبول‌های قرمز در لام مغز استخوان قابل مشاهده هستند. انواع مختلف سلول‌های پیش‌ساز گلبول قرمز و گلبول‌های قرمز بالغ در شرایط خاص قابل مشاهده هستند.</p>
+                <div class="card-highlight">
+                    <h4>گلبول‌های قرمز هسته‌دار (NRBC)</h4>
+                    <p>در مغز استخوان طی فرآیند طبیعی اریتروپوئز، گلبول‌های قرمز هسته‌دار دیده می‌شوند. این سلول‌ها شامل مراحل اولیه تکامل گلبول‌های قرمز هستند که قبل از اینکه هسته خود را از دست بدهند و به گلبول قرمز بالغ تبدیل شوند، در لام مغز استخوان حضور دارند.</p>
+                </div>
+                <p>حضور این سلول‌ها در شرایط آسیب یا استرس مغز استخوان افزایش می‌یابد.</p>
+                <div class="reference">
+                    <a href="https://www.mayoclinic.org/tests-procedures/bone-marrow-biopsy/about/pac-20393117" target="_blank">Bone Marrow Biopsy - Mayo Clinic</a>
+                    <br>
+                    <a href="https://my.clevelandclinic.org/health/diagnostics/17735-bone-marrow-biopsy" target="_blank">Bone Marrow Biopsy - Cleveland Clinic</a>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h3>تکامل گلبول قرمز</h3>
+                </div>
+                <p>تکامل گلبول قرمز مسیر پیچیده‌ای را در مغز استخوان طی می‌کند. مراحل تکاملی شامل:</p>
+                <img src="./images/erythropoiesis.png" alt="Erythropoiesis stages" style="width: 100%; height: auto; margin: 20px 0; border-radius: 8px;">
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h3>گلبول‌های قرمز بالغ</h3>
+                </div>
+                <p>گلبول‌های قرمز بالغ معمولاً در خون محیطی دیده می‌شوند. در مغز استخوان، این سلول‌ها ممکن است در نتیجه نشت سلول‌ها به محیط اطراف یا در شرایطی که سد مغز استخوان به خون محیطی آسیب دیده باشد، مشاهده شوند.</p>
+                <div class="card-highlight">
+                    <h4>شرایط پاتولوژیک</h4>
+                    <p>این وضعیت غیرعادی ممکن است در بیماری‌هایی مثل لوسمی یا آسیب شدید مغز استخوان رخ دهد.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="ldh-section" class="data-row">
+        <h2>لاکتات دهیدروژناز (LDH)</h2>
+        <p>افزایش سطح آنزیم لاکتات دهیدروژناز (LDH) در آزمایش خون معمولاً به آسیب سلولی یا مرگ سلولی مربوط است. LDH در تمامی سلول‌های بدن یافت می‌شود و تخریب سلول‌ها موجب آزاد شدن این آنزیم به جریان خون می‌شود.</p>
+
+        <div class="chart-container">
+            <canvas id="ldh-chart" class="canvas-holder"></canvas>
+        </div>
+
+        <div class="sections">
+            <div class="card">
+                <div class="card-header">
+                    <h3>بیماری‌های کبدی</h3>
+                </div>
+                <p>شرایط مختلف کبدی که می‌توانند باعث افزایش LDH شوند:</p>
+                <ul>
+                    <li>سیروز کبدی یا شرایطی که باعث آسیب به کبد می‌شوند</li>
+                    <li>هپاتیت ویروسی یا هپاتیت الکلی</li>
+                    <li>سرطان‌های کبد که موجب آسیب سلولی می‌شوند</li>
+                </ul>
+                <div class="reference">
+                    <a href="https://www.ncbi.nlm.nih.gov/books/NBK557536/" target="_blank">Biochemistry, Lactate Dehydrogenase - StatPearls</a>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h3>حمله قلبی</h3>
+                </div>
+                <p>در حمله قلبی، مرگ سلول‌های عضله قلب باعث آزاد شدن LDH به خون می‌شود. LDH به عنوان یکی از مارکرهای بیوشیمیایی برای تشخیص آسیب به بافت قلب استفاده می‌شود.</p>
+                <div class="card-highlight">
+                    <h4>زمان‌بندی افزایش</h4>
+                    <p>LDH به ویژه در فازهای بعدی پس از حمله قلبی (پس از آستانه مارکرهای اصلی مانند CK-MB) افزایش می‌یابد.</p>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h3>آسیب‌های عضلانی</h3>
+                </div>
+                <p>آسیب به عضلات اسکلتی یا شرایطی مانند رابدومیولیز که منجر به تخریب بافت عضله می‌شود، می‌تواند سطح LDH را افزایش دهد.</p>
+                <p>تمرینات شدید یا جراحت‌های بزرگ از علل افزایش LDH هستند.</p>
+            </div>
+        </div>
+
+        <div class="sections">
+            <div class="card">
+                <div class="card-header">
+                    <h3>عفونت‌ها</h3>
+                </div>
+                <p>عفونت‌های ویروسی یا باکتریایی که باعث التهاب بافتی می‌شوند، می‌توانند سطح LDH را بالا ببرند. مثال‌هایی شامل پنومونی عفونی شدید یا انواع خاصی از مننژیت هستند.</p>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h3>سرطان‌ها</h3>
+                </div>
+                <p>LDH می‌تواند به عنوان یک مارکر غیراختصاصی در انواع سرطان، از جمله سرطان خون (لوکمی)، لنفوم، یا سرطان‌های متاستاتیک (مانند سرطان سینه و ریه) افزایش یابد.</p>
+                <div class="reference">
+                    <a href="https://www.ncbi.nlm.nih.gov/books/NBK557536/" target="_blank">Biochemistry, Lactate Dehydrogenase - StatPearls</a>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h3>سایر علل</h3>
+                </div>
+                <p>سایر شرایطی که می‌توانند LDH را افزایش دهند:</p>
+                <ul>
+                    <li>آسیب استخوان یا شکستگی‌ها</li>
+                    <li>بیماری‌های خونی (کم‌خونی‌های غیر همولیتیک)</li>
+                    <li>بیماری‌های ریوی (آمبولی ریوی)</li>
+                </ul>
+                <button class="show-more" onclick="toggleContent('other-ldh')">نمایش بیشتر</button>
+                <div id="other-ldh" class="hidden-content">
+                    <p>خلاصه: افزایش LDH یک شاخص غیر اختصاصی برای مرگ سلولی است و با بیماری‌ها یا آسیب‌های متعددی همراه است، از جمله بیماری‌های کبدی، حمله قلبی، عفونت‌ها، تروما، سرطان‌ها، بیماری‌های خونی و آسیب‌های عضلانی یا استخوانی.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="rdw-section" class="data-row">
+        <h2>توزیع اندازه گلبول‌های قرمز (RDW)</h2>
+        <p>RDW از نوع SD (Red cell Distribution Width – Standard Deviation) و CV (Red cell Distribution Width – Coefficient of Variation) همواره با یکدیگر تغییر نمی‌کنند و در برخی از شرایط، یکی از آن‌ها ممکن است تغییرات بیشتری نشان دهد یا حساسیت بالاتری در تحلیل‌های بالینی داشته باشد.</p>
+
+        <div class="sections">
+            <div class="card">
+                <div class="card-header">
+                    <h3>تفاوت RDW-SD و RDW-CV</h3>
+                </div>
+                <div class="card-highlight">
+                    <h4>کم‌خونی ناشی از فقر آهن (IDA)</h4>
+                    <p>در مطالعات مشخص شده که RDW-SD و RDW-CV در گروه بیماران مبتلا به کم‌خونی ناشی از فقر آهن به طور متفاوت با سطح فریتین همبستگی دارند. RDW-SD ارتباط قوی‌تری با کمبود آهن نشان داده است.</p>
+                </div>
+                <div class="reference">
+                    <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC8572805/" target="_blank">Red blood cell distribution width-standard deviation but not coefficient of variation correlates with Iron Deficiency Anemia</a>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h3>ارتباط با فیبروز کبدی</h3>
+                </div>
+                <p>در بیماران مبتلا به فیبروز کبدی:</p>
+                <ul>
+                    <li>RDW-SD همبستگی قوی‌تری با مراحل پیشرفته فیبروز نشان داده است</li>
+                    <li>RDW-CV چنین قدرت پیش‌بینی‌کننده‌ای را نداشته است</li>
+                    <li>این مسئله نشان‌دهنده دقت بیشتر RDW-SD برای شناسایی بیماران در معرض خطر آسیب شدید کبدی است</li>
+                </ul>
+                <div class="reference">
+                    <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC10619233/" target="_blank">RDW-SD is Superior to RDW-CV in Reflecting Liver Fibrosis</a>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h3>دلایل تفاوت در مقادیر</h3>
+                </div>
+                <div class="card-highlight">
+                    <h4>فرمول محاسبه</h4>
+                    <ul>
+                        <li><strong>RDW-CV</strong>: به تغییرات استاندارد و میانگین حجم سلول‌های قرمز (MCV) بستگی دارد</li>
+                        <li><strong>RDW-SD</strong>: به طور مستقیم بر اساس طیف اندازه گلبول‌های قرمز اندازه‌گیری می‌شود</li>
+                    </ul>
+                </div>
+                <p>به همین دلیل، RDW-SD در برخی شرایط می‌تواند تغییر در تنوع اندازه گلبول‌های قرمز را دقیق‌تر نشان دهد.</p>
+            </div>
+        </div>
+
+        <div class="sections">
+            <div class="card">
+                <div class="card-header">
+                    <h3>کاربردهای بالینی</h3>
+                </div>
+                <p>در تحلیل‌های بالینی، انتخاب شاخص مناسب برای وضعیت خاص می‌تواند به تصمیم‌گیری‌های دقیق‌تر کمک کند:</p>
+                <ul>
+                    <li>برای ارزیابی کم‌خونی فقر آهن، RDW-SD ارجح است</li>
+                    <li>در بررسی فیبروز کبدی، RDW-SD حساسیت بیشتری دارد</li>
+                    <li>در شرایطی که MCV تغییرات زیادی دارد، RDW-SD می‌تواند نتایج دقیق‌تری ارائه دهد</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <section id="hemolysis-section" class="data-row">
+        <h2>همولیز</h2>
+        <p>همولیز فرآیندی است که طی آن تخریب گلبول‌های قرمز (RBCs) رخ می‌دهد و باعث آزاد شدن هموگلوبین به جریان خون می‌شود. هموگلوبین پروتئینی حیاتی است که نقش حمل اکسیژن از ریه‌ها به بافت‌های بدن را ایفا می‌کند.</p>
+
+        <div class="chart-container">
+            <canvas id="hemolysis-chart" class="canvas-holder"></canvas>
+        </div>
+
+        <div class="sections">
+            <div class="card">
+                <div class="card-header">
+                    <h3>رابطه با هموگلوبین</h3>
+                </div>
+                <p>در شرایط همولیز، گلبول‌های قرمز نابالغ یا بالغ به دلیل آسیب به غشای سلولی یا اختلالات داخلی دچار تخریب می‌شوند.</p>
+                <div class="card-highlight">
+                    <h4>هموگلوبینمی</h4>
+                    <p>اگر سرعت همولیز بالا باشد، میزان هموگلوبین آزاد در خون می‌تواند از توانایی بدن برای پردازش آن فراتر رود و منجر به هموگلوبینمی (وجود هموگلوبین آزاد در پلاسمای خون) شود.</p>
+                </div>
+                <div class="reference">
+                    <a href="https://www.ncbi.nlm.nih.gov/books/NBK558904/" target="_blank">Hemolytic Anemia - StatPearls</a>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h3>عوامل داخلی</h3>
+                </div>
+                <p>عوامل داخلی که می‌توانند باعث همولیز شوند:</p>
+                <ul>
+                    <li><strong>اختلالات ارثی هموگلوبین</strong>: مانند کم‌خونی داسی شکل که در آن تغییرات ساختاری در مولکول هموگلوبین باعث ناپایداری غشای گلبول قرمز می‌شوند.</li>
+                    <li><strong>اختلالات غشای سلولی</strong>: مانند اسفروسیتوز ارثی که در آن نقص پروتئین‌های غشاء مانند اسپکترین و انکیرین سبب افزایش شکنندگی RBC می‌شود.</li>
+                    <li><strong>اختلالات آنزیمی</strong>: مانند کمبود آنزیم G6PD که سلول‌های قرمز را در برابر استرس‌های اکسیداتیو آسیب‌پذیر می‌کند.</li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h3>عوامل خارجی</h3>
+                </div>
+                <p>عوامل خارجی که می‌توانند باعث همولیز شوند:</p>
+                <ul>
+                    <li><strong>عفونت‌ها</strong>: برخی عفونت‌ها مانند ملاریا یا سپسیس می‌توانند گلبول‌های قرمز را تخریب کنند.</li>
+                    <li><strong>پاسخ‌های ایمنی</strong>: آنتی‌بادی‌های مخرب در شرایطی مثل کم‌خونی خود ایمنی به غشاء RBC حمله می‌کنند.</li>
+                    <li><strong>آسیب مکانیکی</strong>: شرایط خاصی مانند دریچه‌های مصنوعی قلب یا ESRD باعث ترومای مکانیکی به گلبول‌های قرمز می‌شوند.</li>
+                    <li><strong>سموم و داروها</strong>: برخی داروها، مانند داروهای ضد مالاریا یا سموم، می‌توانند باعث آسیب به گلبول‌های قرمز شوند.</li>
+                </ul>
+                <button class="show-more" onclick="toggleContent('extrinsic-factors')">نمایش بیشتر</button>
+                <div id="extrinsic-factors" class="hidden-content">
+                    <p>تروماهای شیمیایی مثل مواجهه با مواد اکسیدکننده نیز می‌توانند منجر به همولیز شوند.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="sections">
+            <div class="card">
+                <div class="card-header">
+                    <h3>پیامدهای آزاد شدن هموگلوبین</h3>
+                </div>
+                <ul>
+                    <li><strong>هیپربیلی‌روبینمی</strong>: آزاد شدن هموگلوبین باعث افزایش فرآیندهای تجزیه‌ای در کبد و تبدیل آن به بیلی‌روبین می‌شود. این حالت ممکن است منجر به زردی شود.</li>
+                    <li><strong>هموگلوبینوری</strong>: در موارد شدید، هموگلوبین آزاد ممکن است از فیلتراسیون کلیه عبور کرده و در ادرار ظاهر شود.</li>
+                    <li><strong>کاهش اکسیژن‌رسانی</strong>: همراه با کم‌خونی، هموگلوبین کمتر در دسترس قرار می‌گیرد، که می‌تواند اکسیژن‌رسانی به بافت‌ها را مختل کند.</li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h3>تشخیص و درمان</h3>
+                </div>
+                <p>تشخیص همولیز مستلزم بررسی سطح LDH، هپتوگلوبین (کاهش یافته در همولیز) و بیلی‌روبین در آزمایش خون است. اسمیر خون محیطی نیز روش مفیدی برای مشاهده تغییرات شکل RBC است.</p>
+                <div class="card-highlight">
+                    <h4>روش‌های درمانی</h4>
+                    <ul>
+                        <li>درمان بیماری‌های زمینه‌ای (مثل درمان ملاریا در عفونتی مرتبط)</li>
+                        <li>تجویز اسید فولیک یا مکمل‌های دیگر برای تحریک بهتر اریتروپوئز</li>
+                        <li>کورتیکواستروئیدها در موارد خود ایمنی</li>
+                    </ul>
+                </div>
+                <div class="reference">
+                    <a href="https://my.clevelandclinic.org/health/diseases/24108-hemolysis" target="_blank">Hemolysis - Cleveland Clinic</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="rna-section" class="data-row">
+        <h2>پایداری RNA گلوبین در تمایز اریتروسیت‌ها</h2>
+        <p>mRNA گلوبین‌ها نقش حیاتی در سنتز پروتئین‌های گلوبین دارند که برای تشکیل هموگلوبین و عملکرد صحیح اریتروسیت‌ها ضروری است. طول عمر یا پایداری mRNA گلوبین‌ها در مراحل مختلف تمایز سلول‌های اریتروئید متغیر است.</p>
+
+        <div class="sections">
+            <div class="card">
+                <div class="card-header">
+                    <h3>مرحله اورتوکروماتیک اریتروبلاست‌ها</h3>
+                </div>
+                <div class="card-highlight">
+                    <h4>تولید و پایداری mRNA</h4>
+                    <p>در این مرحله، سطح بالایی از mRNA گلوبین تولید می‌شود که ناشی از پایداری بالا و کاهش سرعت تخریب این مولکول‌ها است.</p>
+                </div>
+                <p>پایداری بالای این مولکول‌های mRNA به سلول‌ها اجازه می‌دهد که به طور مستمر پروتئین‌های گلوبین را سنتز کنند، که برای تولید هموگلوبین مورد نیاز در گلبول‌های قرمز ضروری است.</p>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h3>مرحله رتیکولوسیت‌ها</h3>
+                </div>
+                <p>در هنگام انتقال از مرحله ارثوکروماتیک اریتروبلاست‌ها به رتیکولوسیت‌ها، تغییرات قابل‌توجهی در پایداری mRNA گلوبین رخ می‌دهد:</p>
+                <ul>
+                    <li>در رتیکولوسیت‌ها، اگرچه سنتز پروتئین گلوبین همچنان ادامه دارد، اما پایداری mRNA کاهش پیدا می‌کند</li>
+                    <li>این امر منجر به کاهش تدریجی میزان سنتز پروتئین‌های گلوبین می‌شود</li>
+                    <li>این تغییرات تنظیمی در پایداری mRNA به آماده‌سازی سلول برای تمایز نهایی به اریتروسیت کامل کمک می‌کند</li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h3>عوامل تأثیرگذار بر پایداری mRNA</h3>
+                </div>
+                <p>تعدادی از عوامل و پروتئین‌های تنظیمی طول عمر mRNA گلوبین را تنظیم می‌کنند:</p>
+                <ul>
+                    <li>پروتئین‌های متصل‌شونده به RNA</li>
+                    <li>microRNAها</li>
+                    <li>عوامل تخریب‌کننده یا محافظت‌کننده از mRNA</li>
+                </ul>
+                <div class="reference">
+                    <a href="https://www.med.upenn.edu/liebhaber_cooke/projects/mRNA_docs/RNA_Review_9.pdf" target="_blank">Regulation of α-Globin mRNA Stability</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="sections">
+            <div class="card">
+                <div class="card-header">
+                    <h3>اهمیت بالینی</h3>
+                </div>
+                <p>درک مکانیسم‌های تنظیم پایداری mRNA گلوبین می‌تواند به اهداف زیر کمک کند:</p>
+                <ul>
+                    <li>توسعه درمان‌های جدید برای اختلالات گلبول قرمز</li>
+                    <li>بهبود درک ما از بیماری‌های خونی</li>
+                    <li>شناسایی اهداف درمانی جدید</li>
+                </ul>
+                <div class="reference">
+                    <a href="https://www.nature.com/articles/s41598-023-40039-2" target="_blank">Gene Expression in Sickle Cell Reticulocytes</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="sleep-section" class="data-row">
+        <h2>تأثیر وضعیت بدنی بر پارامترهای خونی</h2>
+        <p>تغییر وضعیت بدن از حالت خوابیده به ایستاده می‌تواند تأثیرات قابل توجهی بر پارامترهای خونی داشته باشد.</p>
+
+        <div class="sections">
+            <div class="card">
+                <div class="card-header">
+                    <h3>تأثیر تغییرات حجمی خون</h3>
+                </div>
+                <div class="card-highlight">
+                    <h4>مکانیسم تغییرات</h4>
+                    <p>هنگامی که از حالت خوابیده به حالت ایستاده تغییر می‌دهید، نیروی جاذبه باعث تجمع خون در اندام‌های تحتانی می‌شود. این تجمع (پولینگ) خون به کاهش نسبی حجم پلاسمای خون منجر می‌شود.</p>
+                </div>
+                <p>تعداد گلبول‌های قرمز در خون تغییری نمی‌کند، اما غلظت هموگلوبین، هماتوکریت و تعداد گلبول‌های قرمز افزایش می‌یابد.</p>
+                <div class="reference">
+                    <a href="https://www.sciencedirect.com/science/article/abs/pii/S0025619611630929" target="_blank">Posture-Dependent Change in Hematocrit</a>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h3>فعال‌سازی سیستم عصبی سمپاتیک</h3>
+                </div>
+                <ul>
+                    <li>تغییر حالت بدنی به ایستاده باعث تحریک سیستم عصبی سمپاتیک می‌شود</li>
+                    <li>این تحریک منجر به انقباض عروق (vasoconstriction) در اندام‌های تحتانی می‌شود</li>
+                    <li>این عمل به بازگشت سریع‌تر خون به گردش مرکزی کمک می‌کند</li>
+                    <li>به دلیل کاهش حجم پلاسمای خون در گردش و تغییر نسبت گلبول‌های قرمز، مقادیر هماتوکریت و هموگلوبین افزایش می‌یابد</li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h3>تأثیر EPO (اریتروپوئیتین)</h3>
+                </div>
+                <p>کاهش انتقال اکسیژن یا فشار خون در گردش مرکزی ممکن است به ترشح کوتاه‌مدت هورمون اریتروپوئیتین منجر شود. این هورمون تولید گلبول‌های قرمز را تحریک می‌کند و در پاسخ به کاهش حجم پلاسمای خون، غلظت کلی آن افزایش می‌یابد.</p>
+                <div class="reference">
+                    <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC5457476/" target="_blank">Tides within ourselves: how posture can affect blood</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="sections">
+            <div class="card">
+                <div class="card-header">
+                    <h3>نکات مهم بالینی</h3>
+                </div>
+                <div class="card-highlight">
+                    <h4>ماهیت موقتی تغییرات</h4>
+                    <p>این تغییرات اغلب گذرا هستند و با ماندگاری طولانی در حالت ایستاده، بدن تطبیق یافته و مقادیر هماتوکریت، هموگلوبین و تعداد گلبول‌های قرمز به حالت عادی بازمی‌گردد.</p>
+                </div>
+                <p>این پدیده معمولاً مشکلی پزشکی ایجاد نمی‌کند و بخشی از پاسخ‌های فیزیولوژیکی طبیعی بدن است.</p>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <div class="contact-info">
+                <p>طراح: پارسا خسروانی</p>
+                <p>شماره تماس: ۰۹۱۰۵۰۰۹۷۳۷</p>
+                <p>ایمیل: parsakhosravani83@gmail.com</p>
+                <p>تلگرام: @Par3a83</p>
+            </div>
+            <p>© 2025 داشبورد تحلیل خون‌شناسی | ابزار تجسم‌سازی پزشکی</p>
+        </div>
+    </footer>
+</div>
+
+<script>
+// Animation on scroll
+function animateOnScroll() {
+    const cards = document.querySelectorAll('.card');
+    const chartContainers = document.querySelectorAll('.chart-container');
+
+    const options = {
+        threshold: 0.2
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                gsap.to(entry.target, {
+                    y: 0,
+                    opacity: 1,
+                    duration: 0.8,
+                    ease: "power2.out"
+                });
+                observer.unobserve(entry.target);
+            }
+        });
+    }, options);
+
+    cards.forEach(card => {
+        observer.observe(card);
+    });
+
+    chartContainers.forEach(container => {
+        observer.observe(container);
+    });
+}
+
+// Toggle content for "Show more" buttons
+function toggleContent(id) {
+    const content = document.getElementById(id);
+    const button = content.previousElementSibling;
+
+    if (content.style.maxHeight) {
+        content.style.maxHeight = null;
+        button.textContent = "نمایش بیشتر";
+    } else {
+        content.style.maxHeight = content.scrollHeight + "px";
+        button.textContent = "نمایش کمتر";
+    }
+}
+
+// Background canvas animation
+function initBackgroundCanvas() {
+    const canvas = document.createElement('canvas');
+    document.getElementById('canvas-bg').appendChild(canvas);
+    const ctx = canvas.getContext('2d');
+
+    // Set canvas size
+    function resizeCanvas() {
+        canvas.width = document.getElementById('canvas-bg').offsetWidth;
+        canvas.height = document.getElementById('canvas-bg').offsetHeight;
+    }
+
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas);
+
+    // Particles
+    class Particle {
+        constructor() {
+            this.x = Math.random() * canvas.width;
+            this.y = Math.random() * canvas.height;
+            this.size = Math.random() * 3 + 1;
+            this.speedX = Math.random() * 0.5 - 0.25;
+            this.speedY = Math.random() * 0.5 - 0.25;
+            this.color = Math.random() > 0.5 ? '#ff4757' : '#3498db';
+        }
+
+        update() {
+            this.x += this.speedX;
+            this.y += this.speedY;
+
+            if (this.x > canvas.width) this.x = 0;
+            else if (this.x < 0) this.x = canvas.width;
+
+            if (this.y > canvas.height) this.y = 0;
+            else if (this.y < 0) this.y = canvas.height;
+        }
+
+        draw() {
+            ctx.fillStyle = this.color;
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+            ctx.fill();
+        }
+    }
+
+    const particles = [];
+    const particleCount = 50;
+
+    for (let i = 0; i < particleCount; i++) {
+        particles.push(new Particle());
+    }
+
+    function connectParticles() {
+        const maxDistance = 120;
+
+        for (let i = 0; i < particles.length; i++) {
+            for (let j = i; j < particles.length; j++) {
+                const dx = particles[i].x - particles[j].x;
+                const dy = particles[i].y - particles[j].y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+
+                if (distance < maxDistance) {
+                    ctx.beginPath();
+                    ctx.strokeStyle = particles[i].color;
+                    ctx.globalAlpha = 1 - (distance / maxDistance);
+                    ctx.lineWidth = 0.5;
+                    ctx.moveTo(particles[i].x, particles[i].y);
+                    ctx.lineTo(particles[j].x, particles[j].y);
+                    ctx.stroke();
+                    ctx.globalAlpha = 1;
+                }
+            }
+        }
+    }
+
+    function animate() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        for (let i = 0; i < particles.length; i++) {
+            particles[i].update();
+            particles[i].draw();
+        }
+
+        connectParticles();
+        requestAnimationFrame(animate);
+    }
+
+    animate();
+}
+
+// LDH Chart
+function initLDHChart() {
+    const ctx = document.getElementById('ldh-chart').getContext('2d');
+    const chart = new Chart(ctx, {
+        type: 'radar',
+        data: {
+            labels: ['بیماری‌های کبدی', 'حمله قلبی', 'آسیب‌های عضلانی', 'عفونت‌ها', 'سرطان‌ها', 'آسیب استخوان', 'بیماری‌های خونی', 'بیماری‌های ریوی'],
+            datasets: [{
+                label: 'میزان ارتباط با افزایش LDH',
+                data: [85, 90, 75, 65, 80, 60, 70, 55],
+                backgroundColor: 'rgba(255, 71, 87, 0.2)',
+                borderColor: 'rgba(255, 71, 87, 1)',
+                borderWidth: 2,
+                pointBackgroundColor: 'rgba(255, 71, 87, 1)',
+                pointBorderColor: '#fff',
+                pointHoverBackgroundColor: '#fff',
+                pointHoverBorderColor: 'rgba(255, 71, 87, 1)'
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                r: {
+                    angleLines: {
+                        color: 'rgba(255, 255, 255, 0.1)'
+                    },
+                    grid: {
+                        color: 'rgba(255, 255, 255, 0.1)'
+                    },
+                    pointLabels: {
+                        color: '#f5f5f5',
+                        font: {
+                            size: 12,
+                            family: 'Vazirmatn'
+                        }
+                    },
+                    ticks: {
+                        color: '#b3b3b3',
+                        backdropColor: 'transparent'
+                    }
+                }
+            },
+            plugins: {
+                legend: {
+                    labels: {
+                        color: '#f5f5f5',
+                        font: {
+                            family: 'Vazirmatn'
+                        }
+                    }
+                }
+            }
+        }
+    });
+}
+
+// Hemolysis Chart
+function initHemolysisChart() {
+    const ctx = document.getElementById('hemolysis-chart').getContext('2d');
+    const chart = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: [
+                'عوامل داخلی (اختلالات هموگلوبین)',
+                'عوامل داخلی (اختلالات غشای سلولی)',
+                'عوامل داخلی (اختلالات آنزیمی)',
+                'عوامل خارجی (عفونت‌ها)',
+                'عوامل خارجی (پاسخ‌های ایمنی)',
+                'عوامل خارجی (آسیب مکانیکی)'
+            ],
+            datasets: [{
+                data: [25, 20, 15, 15, 15, 10],
+                backgroundColor: [
+                    '#ff4757',
+                    '#ff6b81',
+                    '#ff7f8a',
+                    '#3498db',
+                    '#2980b9',
+                    '#1e5799'
+                ],
+                borderColor: 'rgba(30, 30, 30, 0.8)',
+                borderWidth: 2
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'right',
+                    labels: {
+                        color: '#f5f5f5',
+                        font: {
+                            size: 12,
+                            family: 'Vazirmatn'
+                        },
+                        padding: 20
+                    }
+                },
+                tooltip: {
+                    backgroundColor: 'rgba(30, 30, 30, 0.8)',
+                    titleColor: '#f5f5f5',
+                    bodyColor: '#f5f5f5',
+                    borderColor: '#3498db',
+                    borderWidth: 1,
+                    padding: 15,
+                    displayColors: true,
+                    callbacks: {
+                        label: function(context) {
+                            return context.label + ': ' + context.parsed + '%';
+                        }
+                    }
+                }
+            }
+        }
+    });
+}
+
+// Add this function after other JavaScript functions
+function initSmoothScroll() {
+    document.querySelectorAll('nav a').forEach(anchor => {
+        anchor.addEventListener('click', function(e) {
+            e.preventDefault();
+            const targetId = this.getAttribute('href');
+            const targetSection = document.querySelector(targetId);
+            
+            if (targetSection) {
+                targetSection.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }
+        });
+    });
+}
+
+// Update the DOMContentLoaded event listener
+document.addEventListener('DOMContentLoaded', function() {
+    initBackgroundCanvas();
+    initLDHChart();
+    initHemolysisChart();
+    animateOnScroll();
+    initSmoothScroll();
+});
+</script>
+</body>
+</html> 
