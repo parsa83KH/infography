@@ -54,9 +54,9 @@ body {
 }
 
 header {
-    background: rgba(30, 30, 30, 0.7);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
+    background: rgba(30, 30, 30, 0.4);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
     padding: 20px 0;
     position: relative;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
@@ -77,12 +77,14 @@ header {
 .logo h1 {
     margin-right: 15px;
     font-weight: 700;
-    background: linear-gradient(45deg, var(--accent-primary), var(--accent-secondary));
+    font-size: 2.2rem;
+    font-family: 'Samim', sans-serif;
+    background: linear-gradient(-45deg, var(--accent-primary), #2980b9, #8e44ad, var(--accent-secondary));
+    background-size: 300%;
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
-    font-size: 2.2rem;
-    font-family: 'Samim', sans-serif;
+    animation: gradient 5s ease infinite;
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
     transition: transform 0.3s ease, text-shadow 0.3s ease;
 }
@@ -90,6 +92,18 @@ header {
 .logo h1:hover {
     transform: scale(1.05);
     text-shadow: 0 0 15px rgba(255, 71, 87, 0.5);
+}
+
+@keyframes gradient {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
 }
 
 nav ul {
@@ -130,36 +144,220 @@ nav ul li a:hover:after {
 
 .hero {
     text-align: center;
-    padding: 40px 0;
+    padding: 80px 0;
     background: transparent;
     position: relative;
+    overflow: hidden;
+    min-height: 60vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.hero::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(circle at center, rgba(52, 152, 219, 0.1) 0%, rgba(255, 71, 87, 0.1) 100%);
+    z-index: -1;
+}
+
+.hero-content {
+    max-width: 1000px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 1;
 }
 
 .hero h2 {
-    font-size: 2.8rem;
-    margin-bottom: 15px;
-    background: linear-gradient(45deg, var(--accent-primary), var(--accent-secondary));
+    font-size: 3.5rem;
+    margin-bottom: 25px;
+    background: linear-gradient(-45deg, var(--accent-primary), #2980b9, #8e44ad, var(--accent-secondary));
+    background-size: 300%;
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
+    animation: gradient 5s ease infinite;
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
     font-family: 'Samim', sans-serif;
     letter-spacing: 1px;
-    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    transition: all 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    position: relative;
+    cursor: pointer;
 }
 
 .hero h2:hover {
-    transform: translateY(-5px) scale(1.02);
+    transform: perspective(500px) rotateX(15deg) scale(1.1);
+    text-shadow: 0 15px 25px rgba(0, 0, 0, 0.3);
 }
 
-.hero p {
+.hero h2::before {
+    content: '';
+    position: absolute;
+    top: 100%;
+    width: 100%;
+    left: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--accent-primary), transparent);
+    transform: scaleX(0);
+    transition: transform 0.5s ease;
+}
+
+.hero h2:hover::before {
+    transform: scaleX(1);
+}
+
+.hero-stats {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    margin: 40px 0;
+}
+
+.stat-item {
+    background: rgba(36, 36, 36, 0.4);
+    backdrop-filter: blur(8px);
+    padding: 20px 30px;
+    border-radius: 15px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.3s ease;
+}
+
+.stat-item:hover {
+    transform: translateY(-5px);
+    border-color: var(--accent-primary);
+}
+
+.stat-number {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: var(--accent-primary);
+    margin-bottom: 10px;
+}
+
+.stat-label {
+    color: var(--text-secondary);
+    font-size: 1rem;
+}
+
+.hero-description {
     font-size: 1.2rem;
     color: var(--text-secondary);
     max-width: 800px;
     margin: 0 auto;
-    position: relative;
-    line-height: 1.8;
+    line-height: 2;
     padding: 0 20px;
+    position: relative;
+    animation: fadeIn 1s ease-out;
+    cursor: pointer;
+    transition: all 0.4s ease;
+}
+
+.hero-description::before,
+.hero-description::after {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--accent-secondary), var(--accent-primary));
+    transition: width 0.4s ease;
+}
+
+.hero-description::before {
+    left: 50%;
+    top: -5px;
+    transform: translateX(-50%);
+}
+
+.hero-description::after {
+    right: 50%;
+    bottom: -5px;
+    transform: translateX(50%);
+}
+
+.hero-description:hover {
+    color: var(--text-primary);
+    transform: translateY(-2px);
+    text-shadow: 0 2px 10px rgba(52, 152, 219, 0.3);
+    letter-spacing: 1px;
+}
+
+.hero-description:hover::before,
+.hero-description:hover::after {
+    width: 80%;
+}
+
+@keyframes glowPulse {
+    0% {
+        text-shadow: 0 0 5px rgba(52, 152, 219, 0.5),
+                     0 0 10px rgba(52, 152, 219, 0.3);
+    }
+    50% {
+        text-shadow: 0 0 20px rgba(255, 71, 87, 0.5),
+                     0 0 30px rgba(255, 71, 87, 0.3);
+    }
+    100% {
+        text-shadow: 0 0 5px rgba(52, 152, 219, 0.5),
+                     0 0 10px rgba(52, 152, 219, 0.3);
+    }
+}
+
+.hero-cta {
+    margin-top: 40px;
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+
+.cta-button {
+    padding: 12px 30px;
+    border-radius: 25px;
+    font-size: 1.1rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.primary-cta {
+    background: transparent;
+    color: var(--accent-primary);
+    border: 2px solid var(--accent-primary);
+    transition: all 0.3s ease;
+}
+
+.primary-cta:hover {
+    background: var(--accent-primary);
+    color: var(--bg-primary);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(255, 71, 87, 0.3);
+}
+
+.secondary-cta {
+    background: transparent;
+    color: var(--accent-secondary);
+    border: 2px solid var(--accent-secondary);
+    transition: all 0.3s ease;
+}
+
+.secondary-cta:hover {
+    background: var(--accent-secondary);
+    color: var(--bg-primary);
+    transform: translateY(-2px);
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .data-row {
@@ -213,9 +411,9 @@ nav ul li a:hover:after {
 }
 
 .card {
-    background: rgba(36, 36, 36, 0.7);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
+    background: rgba(36, 36, 36, 0.4);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
     border-radius: 12px;
     padding: 25px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
@@ -228,6 +426,7 @@ nav ul li a:hover:after {
 }
 
 .card:hover {
+    background: rgba(36, 36, 36, 0.6);
     transform: translateY(-5px);
     box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
     border-color: var(--accent-primary);
@@ -282,9 +481,9 @@ nav ul li a:hover:after {
     position: relative;
     border-radius: 12px;
     overflow: hidden;
-    background: rgba(36, 36, 36, 0.7);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
+    background: rgba(36, 36, 36, 0.4);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     border: 1px solid rgba(255, 255, 255, 0.1);
     opacity: 0;
@@ -292,6 +491,7 @@ nav ul li a:hover:after {
 }
 
 .chart-container:hover {
+    background: rgba(36, 36, 36, 0.6);
     box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
     border-color: var(--accent-secondary);
 }
@@ -367,9 +567,9 @@ nav ul li a:hover:after {
 }
 
 footer {
-    background: rgba(30, 30, 30, 0.7);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
+    background: rgba(30, 30, 30, 0.4);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
     padding: 20px 0;
     margin-top: 40px;
     text-align: center;
@@ -472,8 +672,26 @@ footer p {
     }
 
     .chart-container {
-        height: 300px;
+        height: 500px;
+        padding: 10px;
     }
+}
+
+@media (max-width: 480px) {
+    .chart-container {
+        height: 600px;
+    }
+}
+
+.section-title {
+    font-size: 2.5rem;
+    color: var(--primary-color);
+    margin-bottom: 2rem;
+    text-align: center;
+    position: relative;
+    padding-bottom: 1rem;
+    font-weight: 600;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
 }
 </style>
 </head>
@@ -481,18 +699,15 @@ footer p {
 <div id="canvas-bg"></div>
 <header>
     <div class="container">
-        <div class="header-content">
-            <div class="logo">
-                <h1>تحلیل خون‌شناسی</h1>
-            </div>
-            <nav>
-                <ul>
-                    <li><a href="#rbc-section">گلبول قرمز در مغز استخوان</a></li>
+        <div class="header-content" style="flex-direction: row;">
+            <nav style="width: 100%; display: flex; justify-content: center;">
+                <ul style="margin-top: 0;">
+                    <li><a href="#rbc-section">RBCs in BM</a></li>
                     <li><a href="#ldh-section">LDH</a></li>
-                    <li><a href="#hemolysis-section">همولیز</a></li>
+                    <li><a href="#hemolysis-section">Hemolysis</a></li>
                     <li><a href="#rdw-section">RDW</a></li>
                     <li><a href="#rna-section">RNA</a></li>
-                    <li><a href="#sleep-section">اثر خواب</a></li>
+                    <li><a href="#sleep-section">Sleep effect</a></li>
                 </ul>
             </nav>
         </div>
@@ -501,8 +716,30 @@ footer p {
 
 <section class="hero">
     <div class="container">
-        <h2>تحقیق های هماتولوژی</h2>
-        <p>نمایش تعاملی داده‌های خون‌شناسی</p>
+        <div class="hero-content">
+            <h2>تحقیق های هماتولوژی</h2>
+            <p class="hero-description">lovely Hematology</p>
+            
+            <div class="hero-stats">
+                <div class="stat-item">
+                    <div class="stat-number">6</div>
+                    <div class="stat-label">بخش‌های تحلیلی</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">2</div>
+                    <div class="stat-label">نمودارهای تعاملی</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">13</div>
+                    <div class="stat-label">منابع معتبر</div>
+                </div>
+            </div>
+            
+            <div class="hero-cta">
+                <a href="#rbc-section" class="cta-button primary-cta">شروع مطالعه</a>
+                <a href="#contact" class="cta-button secondary-cta">ارتباط با ما</a>
+            </div>
+        </div>
     </div>
 </section>
 
@@ -900,7 +1137,7 @@ footer p {
                 <p>طراح: پارسا خسروانی</p>
                 <p>شماره تماس: ۰۹۱۰۵۰۰۹۷۳۷</p>
                 <p>ایمیل: parsakhosravani83@gmail.com</p>
-                <p>تلگرام: @Par3a83</p>
+                <p>تلگرام: Par3a83</p>
             </div>
             <p>© 2025 داشبورد تحلیل خون‌شناسی | ابزار تجسم‌سازی پزشکی</p>
         </div>
@@ -1077,13 +1314,22 @@ function initLDHChart() {
                     pointLabels: {
                         color: '#f5f5f5',
                         font: {
-                            size: 12,
+                            size: function(context) {
+                                const width = context.chart.width;
+                                return width < 512 ? 8 : 12;
+                            },
                             family: 'Vazirmatn'
                         }
                     },
                     ticks: {
                         color: '#b3b3b3',
-                        backdropColor: 'transparent'
+                        backdropColor: 'transparent',
+                        font: {
+                            size: function(context) {
+                                const width = context.chart.width;
+                                return width < 512 ? 8 : 10;
+                            }
+                        }
                     }
                 }
             },
@@ -1092,7 +1338,15 @@ function initLDHChart() {
                     labels: {
                         color: '#f5f5f5',
                         font: {
-                            family: 'Vazirmatn'
+                            family: 'Vazirmatn',
+                            size: function(context) {
+                                const width = context.chart.width;
+                                return width < 512 ? 10 : 12;
+                            }
+                        },
+                        boxWidth: function(context) {
+                            const width = context.chart.width;
+                            return width < 512 ? 30 : 40;
                         }
                     }
                 }
@@ -1134,14 +1388,27 @@ function initHemolysisChart() {
             maintainAspectRatio: false,
             plugins: {
                 legend: {
-                    position: 'right',
+                    position: function(context) {
+                        const width = context.chart.width;
+                        return width < 512 ? 'bottom' : 'right';
+                    },
                     labels: {
                         color: '#f5f5f5',
                         font: {
-                            size: 12,
+                            size: function(context) {
+                                const width = context.chart.width;
+                                return width < 512 ? 10 : 12;
+                            },
                             family: 'Vazirmatn'
                         },
-                        padding: 20
+                        padding: function(context) {
+                            const width = context.chart.width;
+                            return width < 512 ? 10 : 20;
+                        },
+                        boxWidth: function(context) {
+                            const width = context.chart.width;
+                            return width < 512 ? 10 : 15;
+                        }
                     }
                 },
                 tooltip: {
@@ -1163,12 +1430,18 @@ function initHemolysisChart() {
     });
 }
 
-// Add this function after other JavaScript functions
+// Update the smooth scroll function to handle all smooth scroll links including CTA buttons
 function initSmoothScroll() {
-    document.querySelectorAll('nav a').forEach(anchor => {
+    document.querySelectorAll('nav a, .hero-cta a').forEach(anchor => {
         anchor.addEventListener('click', function(e) {
             e.preventDefault();
-            const targetId = this.getAttribute('href');
+            let targetId = this.getAttribute('href');
+            
+            // If the target is #contact, change it to target the contact-info section
+            if (targetId === '#contact') {
+                targetId = '.contact-info';
+            }
+            
             const targetSection = document.querySelector(targetId);
             
             if (targetSection) {
