@@ -772,6 +772,36 @@ footer p {
     font-weight: 600;
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
 }
+
+.back-to-top-btn {
+    display: inline-block;
+    padding: 10px 20px;
+    margin: 20px auto 0;
+    background: transparent;
+    color: var(--accent-secondary);
+    border: 2px solid var(--accent-secondary);
+    border-radius: 25px;
+    font-size: 1rem;
+    font-weight: 500;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: center;
+}
+
+.back-to-top-btn:hover {
+    background: var(--accent-secondary);
+    color: var(--bg-primary);
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
+}
+
+.section-footer {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    margin-top: 30px;
+}
 </style>
 </head>
 <body>
@@ -862,6 +892,9 @@ footer p {
                 </div>
             </div>
         </div>
+        <div class="section-footer">
+            <a href="#" class="back-to-top-btn">بازگشت به بالا <i>&uarr;</i></a>
+        </div>
     </section>
 
     <section id="ldh-section" class="data-row">
@@ -942,6 +975,9 @@ footer p {
                 </div>
             </div>
         </div>
+        <div class="section-footer">
+            <a href="#" class="back-to-top-btn">بازگشت به بالا <i>&uarr;</i></a>
+        </div>
     </section>
 
     <section id="rdw-section" class="data-row">
@@ -1004,6 +1040,9 @@ footer p {
                     <li>در شرایطی که MCV تغییرات زیادی دارد، RDW-SD می‌تواند نتایج دقیق‌تری ارائه دهد</li>
                 </ul>
             </div>
+        </div>
+        <div class="section-footer">
+            <a href="#" class="back-to-top-btn">بازگشت به بالا <i>&uarr;</i></a>
         </div>
     </section>
 
@@ -1090,6 +1129,9 @@ footer p {
                 </div>
             </div>
         </div>
+        <div class="section-footer">
+            <a href="#" class="back-to-top-btn">بازگشت به بالا <i>&uarr;</i></a>
+        </div>
     </section>
 
     <section id="rna-section" class="data-row">
@@ -1152,6 +1194,9 @@ footer p {
                 </div>
             </div>
         </div>
+        <div class="section-footer">
+            <a href="#" class="back-to-top-btn">بازگشت به بالا <i>&uarr;</i></a>
+        </div>
     </section>
 
     <section id="sleep-section" class="data-row">
@@ -1207,6 +1252,9 @@ footer p {
                 </div>
                 <p>این پدیده معمولاً مشکلی پزشکی ایجاد نمی‌کند و بخشی از پاسخ‌های فیزیولوژیکی طبیعی بدن است.</p>
             </div>
+        </div>
+        <div class="section-footer">
+            <a href="#" class="back-to-top-btn">بازگشت به بالا <i>&uarr;</i></a>
         </div>
     </section>
 
@@ -1454,33 +1502,37 @@ function initLDHChart() {
 function initHemolysisChart() {
     const ctx = document.getElementById('hemolysis-chart').getContext('2d');
     const chart = new Chart(ctx, {
-        type: 'doughnut',
+        type: 'pie',
         data: {
             labels: [
-                'اختلالات هموگلوبین',
-                'اختلالات غشای سلولی',
-                'اختلالات آنزیمی',
-                'عفونت‌ها',
-                'پاسخ‌های ایمنی',
-                'آسیب مکانیکی'
+                'اختلالات هموگلوبین (عامل داخلی)',
+                'اختلالات غشای سلولی (عامل داخلی)',
+                'اختلالات آنزیمی (عامل داخلی)',
+                'عفونت‌ها (عامل خارجی)',
+                'پاسخ‌های ایمنی (عامل خارجی)',
+                'آسیب مکانیکی (عامل خارجی)'
             ],
             datasets: [{
                 data: [25, 20, 15, 15, 15, 10],
                 backgroundColor: [
-                    '#ff4757',
-                    '#ff6b81',
-                    '#ff7f8a',
-                    '#3498db',
-                    '#2980b9',
-                    '#1e5799'
+                    '#ff4757', // Red - Internal
+                    '#ff6b81', // Light Red - Internal
+                    '#ff7f8a', // Pink - Internal
+                    '#3498db', // Blue - External
+                    '#2980b9', // Medium Blue - External
+                    '#1e5799'  // Dark Blue - External
                 ],
                 borderColor: 'rgba(30, 30, 30, 0.8)',
-                borderWidth: 2
+                borderWidth: 2,
+                hoverOffset: 15
             }]
         },
         options: {
             responsive: true,
             maintainAspectRatio: false,
+            layout: {
+                padding: 20
+            },
             plugins: {
                 legend: {
                     position: function(context) {
@@ -1503,6 +1555,22 @@ function initHemolysisChart() {
                         boxWidth: function(context) {
                             const width = context.chart.width;
                             return width < 400 ? 8 : 15;
+                        },
+                        generateLabels: function(chart) {
+                            const datasets = chart.data.datasets;
+                            return chart.data.labels.map(function(label, i) {
+                                const meta = chart.getDatasetMeta(0);
+                                const style = meta.controller.getStyle(i);
+                                
+                                return {
+                                    text: label,
+                                    fillStyle: datasets[0].backgroundColor[i],
+                                    strokeStyle: datasets[0].borderColor,
+                                    lineWidth: datasets[0].borderWidth,
+                                    hidden: !chart.getDataVisibility(i),
+                                    index: i
+                                };
+                            });
                         }
                     }
                 },
@@ -1524,9 +1592,9 @@ function initHemolysisChart() {
                     }
                 }
             },
-            cutout: function(context) {
-                const chartWidth = context.chart.width;
-                return chartWidth < 300 ? '65%' : '50%';
+            animation: {
+                animateRotate: true,
+                animateScale: true
             }
         }
     });
@@ -1534,7 +1602,7 @@ function initHemolysisChart() {
 
 // Update the smooth scroll function to handle all smooth scroll links including CTA buttons
 function initSmoothScroll() {
-    document.querySelectorAll('nav a, .hero-cta a').forEach(anchor => {
+    document.querySelectorAll('nav a, .hero-cta a, .back-to-top-btn').forEach(anchor => {
         anchor.addEventListener('click', function(e) {
             e.preventDefault();
             let targetId = this.getAttribute('href');
@@ -1542,6 +1610,14 @@ function initSmoothScroll() {
             // If the target is #contact, change it to target the contact-info section
             if (targetId === '#contact') {
                 targetId = '.contact-info';
+            }
+            // If this is a back-to-top button, scroll to the top
+            else if (targetId === '#') {
+                window.scrollTo({
+                    top: 0,
+                    behavior: 'smooth'
+                });
+                return;
             }
             
             const targetSection = document.querySelector(targetId);
