@@ -2,7 +2,7 @@
 <html lang="fa" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>تحلیل خون‌شناسی</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.1/chart.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/gsap.min.js"></script>
@@ -656,30 +656,109 @@ footer p {
 
     .header-content {
         flex-direction: column;
+        padding: 0;
     }
 
     nav ul {
-        margin-top: 20px;
+        margin-top: 5px;
+        flex-wrap: wrap;
+        justify-content: center;
     }
 
     nav ul li {
-        margin-right: 15px;
-        margin-left: 15px;
+        margin: 5px 8px;
+    }
+
+    nav ul li a {
+        font-size: 14px;
+        padding: 5px;
+    }
+
+    .hero {
+        padding: 30px 0;
+        min-height: auto;
     }
 
     .hero h2 {
-        font-size: 2.2rem;
+        font-size: 2rem;
+        margin-bottom: 15px;
+    }
+
+    .hero-description {
+        font-size: 1rem;
+        padding: 0 15px;
+    }
+
+    .hero-stats {
+        flex-wrap: wrap;
+        gap: 15px;
+    }
+
+    .stat-item {
+        padding: 10px 15px;
+        flex: 0 0 calc(30% - 15px);
+    }
+
+    .stat-number {
+        font-size: 1.8rem;
+    }
+
+    .stat-label {
+        font-size: 0.8rem;
+    }
+
+    .hero-cta {
+        flex-direction: column;
+        gap: 10px;
+        width: 80%;
+        margin: 20px auto 0;
+    }
+
+    .cta-button {
+        width: 100%;
+        text-align: center;
+        padding: 10px;
+    }
+
+    .card {
+        padding: 15px;
     }
 
     .chart-container {
-        height: 500px;
-        padding: 10px;
+        height: 300px;
+        padding: 10px 5px;
+        margin: 20px 0;
     }
 }
 
 @media (max-width: 480px) {
+    nav ul li {
+        margin: 3px 5px;
+    }
+
+    nav ul li a {
+        font-size: 12px;
+        padding: 3px;
+    }
+
+    .hero h2 {
+        font-size: 1.8rem;
+    }
+
+    .stat-item {
+        flex: 0 0 calc(45% - 15px);
+    }
+
+    .stat-number {
+        font-size: 1.5rem;
+    }
+
+    .hero-cta {
+        width: 90%;
+    }
+
     .chart-container {
-        height: 600px;
+        height: 250px;
     }
 }
 
@@ -1281,7 +1360,7 @@ function initBackgroundCanvas() {
     animate();
 }
 
-// LDH Chart
+// Update the LDH Chart configuration
 function initLDHChart() {
     const ctx = document.getElementById('ldh-chart').getContext('2d');
     const chart = new Chart(ctx, {
@@ -1316,37 +1395,53 @@ function initLDHChart() {
                         font: {
                             size: function(context) {
                                 const width = context.chart.width;
-                                return width < 512 ? 8 : 12;
+                                return width < 400 ? 7 : width < 600 ? 9 : 12;
                             },
                             family: 'Vazirmatn'
+                        },
+                        display: function(context) {
+                            const width = context.chart.width;
+                            return width >= 250;
                         }
                     },
                     ticks: {
                         color: '#b3b3b3',
                         backdropColor: 'transparent',
+                        display: function(context) {
+                            const width = context.chart.width;
+                            return width >= 300;
+                        },
                         font: {
                             size: function(context) {
                                 const width = context.chart.width;
-                                return width < 512 ? 8 : 10;
+                                return width < 400 ? 7 : 10;
                             }
+                        },
+                        count: function(context) {
+                            const width = context.chart.width;
+                            return width < 400 ? 3 : 5;
                         }
                     }
                 }
             },
             plugins: {
                 legend: {
+                    display: function(context) {
+                        const width = context.chart.width;
+                        return width >= 250;
+                    },
                     labels: {
                         color: '#f5f5f5',
                         font: {
                             family: 'Vazirmatn',
                             size: function(context) {
                                 const width = context.chart.width;
-                                return width < 512 ? 10 : 12;
+                                return width < 400 ? 9 : 12;
                             }
                         },
                         boxWidth: function(context) {
                             const width = context.chart.width;
-                            return width < 512 ? 30 : 40;
+                            return width < 400 ? 20 : 40;
                         }
                     }
                 }
@@ -1355,19 +1450,19 @@ function initLDHChart() {
     });
 }
 
-// Hemolysis Chart
+// Update the Hemolysis Chart configuration
 function initHemolysisChart() {
     const ctx = document.getElementById('hemolysis-chart').getContext('2d');
     const chart = new Chart(ctx, {
         type: 'doughnut',
         data: {
             labels: [
-                'عوامل داخلی (اختلالات هموگلوبین)',
-                'عوامل داخلی (اختلالات غشای سلولی)',
-                'عوامل داخلی (اختلالات آنزیمی)',
-                'عوامل خارجی (عفونت‌ها)',
-                'عوامل خارجی (پاسخ‌های ایمنی)',
-                'عوامل خارجی (آسیب مکانیکی)'
+                'اختلالات هموگلوبین',
+                'اختلالات غشای سلولی',
+                'اختلالات آنزیمی',
+                'عفونت‌ها',
+                'پاسخ‌های ایمنی',
+                'آسیب مکانیکی'
             ],
             datasets: [{
                 data: [25, 20, 15, 15, 15, 10],
@@ -1390,24 +1485,24 @@ function initHemolysisChart() {
                 legend: {
                     position: function(context) {
                         const width = context.chart.width;
-                        return width < 512 ? 'bottom' : 'right';
+                        return width < 400 ? 'bottom' : 'right';
                     },
                     labels: {
                         color: '#f5f5f5',
                         font: {
                             size: function(context) {
                                 const width = context.chart.width;
-                                return width < 512 ? 10 : 12;
+                                return width < 400 ? 9 : 12;
                             },
                             family: 'Vazirmatn'
                         },
                         padding: function(context) {
                             const width = context.chart.width;
-                            return width < 512 ? 10 : 20;
+                            return width < 400 ? 5 : 20;
                         },
                         boxWidth: function(context) {
                             const width = context.chart.width;
-                            return width < 512 ? 10 : 15;
+                            return width < 400 ? 8 : 15;
                         }
                     }
                 },
@@ -1417,7 +1512,10 @@ function initHemolysisChart() {
                     bodyColor: '#f5f5f5',
                     borderColor: '#3498db',
                     borderWidth: 1,
-                    padding: 15,
+                    padding: function(context) {
+                        const width = context.chart.width;
+                        return width < 400 ? 5 : 15;
+                    },
                     displayColors: true,
                     callbacks: {
                         label: function(context) {
@@ -1425,6 +1523,10 @@ function initHemolysisChart() {
                         }
                     }
                 }
+            },
+            cutout: function(context) {
+                const chartWidth = context.chart.width;
+                return chartWidth < 300 ? '65%' : '50%';
             }
         }
     });
